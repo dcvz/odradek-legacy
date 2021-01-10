@@ -1,3 +1,4 @@
+import * as io from 'socket.io-client';
 import { Service, PlatformAccessory, CharacteristicGetCallback } from 'homebridge';
 
 import { OdradekHomebridgePlatform } from './platform';
@@ -9,19 +10,37 @@ import { OdradekHomebridgePlatform } from './platform';
  */
 export class OdradekPlatformAccessory {
   private service: Service;
-
-  /**
-   * These are just used to create a working example
-   * You should implement your own code to track the state of your accessory
-   */
-  private exampleStates = {
-    On: false,
-  };
+  private socket: io.Socket;
+  private isContactMade = false;
 
   constructor(
     private readonly platform: OdradekHomebridgePlatform,
     private readonly accessory: PlatformAccessory,
   ) {
+    this.socket = io.connect('https://odradek.doublesymmetry.com');
+
+    this.socket.on('connect', () => {
+      console.log('socket connection established');
+      this.socket.emit('join', platform.config.stationId);
+    });
+
+    this.socket.on('disconnect', () => {
+      console.log('socket connection lost');
+    });
+
+    this.socket.on('contact-event', (contactItemId: string) => {
+      console.log('contact event for:', contactItemId);
+      if (contactItemId.includes(accessory.context.device.uniqueId)) {
+        console.log('match made, turning on!');
+        this.isContactMade = true;
+        this.service.updateCharacteristic(this.platform.Characteristic.ContactSensorState, true);
+
+        setInterval(() => {
+          this.isContactMade = false;
+          this.service.updateCharacteristic(this.platform.Characteristic.ContactSensorState, false);    
+        }, 1000);
+      }
+    });
 
     // set accessory information
     this.accessory.getService(this.platform.Service.AccessoryInformation)!
@@ -44,26 +63,6 @@ export class OdradekPlatformAccessory {
     // register handlers for the On/Off Characteristic
     this.service.getCharacteristic(this.platform.Characteristic.ContactSensorState)
       .on('get', this.getState.bind(this));               // GET - bind to the `getOn` method below
-
-    /**
-     * Updating characteristics values asynchronously.
-     * 
-     * Example showing how to update the state of a Characteristic asynchronously instead
-     * of using the `on('get')` handlers.
-     * Here we change update the motion sensor trigger states on and off every 10 seconds
-     * the `updateCharacteristic` method.
-     * 
-     */
-    let motionDetected = false;
-    setInterval(() => {
-      // EXAMPLE - inverse the trigger
-      motionDetected = !motionDetected;
-
-      // push the new value to HomeKit
-      this.service.updateCharacteristic(this.platform.Characteristic.ContactSensorState, motionDetected);
-
-      this.platform.log.debug('Triggering service:', !motionDetected);
-    }, 10000);
   }
 
   /**
@@ -80,15 +79,11 @@ export class OdradekPlatformAccessory {
    * this.service.updateCharacteristic(this.platform.Characteristic.On, true)
    */
   getState(callback: CharacteristicGetCallback) {
-
-    // implement your own code to check if the device is on
-    const isOn = this.exampleStates.On;
-
-    this.platform.log.debug('Get Characteristic On ->', isOn);
+    this.platform.log.debug('Get Characteristic On ->', this.isContactMade);
 
     // you must call the callback function
     // the first argument should be null if there were no errors
     // the second argument should be the value to return
-    callback(null, isOn);
+    callback(null, this.isContactMade);
   }
 }
