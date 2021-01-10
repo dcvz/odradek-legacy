@@ -1,0 +1,17 @@
+{
+  "pluginAlias": "OdradekHomebridgePlugin",
+  "pluginType": "platform",
+  "singular": true,
+  "schema": {
+    "type": "object",
+    "properties": {
+      "stationId": {
+        "title": "Station ID",
+	      "description": "Your Odradek station's ID",
+        "type": "string",
+        "required": true,
+        "minLength": 10
+      }
+    }
+  }
+}
