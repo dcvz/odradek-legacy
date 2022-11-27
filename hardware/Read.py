@@ -34,13 +34,27 @@ def disconnect():
 
 sio.connect("https://odradek.dcvz.io")
 
+currentContactId = ""
+
 try:
     while True:
-        print("Hold a tag near the reader")
-        id, text = reader.read()
-        print("ID: %s\nText: %s" % (id, text[-11:]))
+        print("Looking for tag...")
+        id, text = reader.read_no_block()
+        id, text = reader.read_no_block()
+
+        if id is None:
+          currentContactId = None
+          id, text = reader.read()
+
+        if currentContactId == id:
+          continue
+
+        print("Tag found! ID: %s\nText: %s" % (id, text[-11:]))
+        currentContactId = id
         sio.emit('transmit-event', text)
-        sleep(5)
+        
+        sleep(1)
 except KeyboardInterrupt:
     GPIO.cleanup()
     raise
+

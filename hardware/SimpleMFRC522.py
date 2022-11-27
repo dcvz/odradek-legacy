@@ -47,7 +47,7 @@ class SimpleMFRC522:
     status = self.READER.MFRC522_Read(11)
     data = []
     text_read = ''
-    if status[0] == self.READER.MI_OK:
+    if status and status[0] == self.READER.MI_OK:
         for block_num in self.BLOCK_ADDRS:
             block = self.READER.MFRC522_Read(block_num) 
             if block:
