@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: odradek-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/use-regex: 'true'
+spec:
+  tls:
+  - hosts:
+    - odradek.dcvz.io
+    secretName: odradek-kubernetes-tls
+  rules:
+  - host: "odradek.dcvz.io"
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: odradek
+            port:
+              number: 80
+              

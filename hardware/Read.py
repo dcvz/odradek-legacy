@@ -32,7 +32,7 @@ def connect():
 def disconnect():
     print('disconnected from server')
 
-sio.connect("https://odradek.doublesymmetry.com")
+sio.connect("https://odradek.dcvz.io")
 
 try:
     while True:

@@ -4,7 +4,7 @@ import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway } from
 export type TaggedSocket = Socket & { sessionId: string }
 
 @WebSocketGateway()
-export class PublicGateway {
+export class CommunicationGateway {
 
   //  MARK: - Public Events
 
