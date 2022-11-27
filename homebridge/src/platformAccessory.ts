@@ -17,7 +17,7 @@ export class OdradekPlatformAccessory {
     private readonly platform: OdradekHomebridgePlatform,
     private readonly accessory: PlatformAccessory,
   ) {
-    this.socket = io.connect('https://odradek.doublesymmetry.com');
+    this.socket = io.connect('https://odradek.dcvz.io');
 
     this.socket.on('connect', () => {
       console.log('socket connection established');
@@ -44,7 +44,7 @@ export class OdradekPlatformAccessory {
 
     // set accessory information
     this.accessory.getService(this.platform.Service.AccessoryInformation)!
-      .setCharacteristic(this.platform.Characteristic.Manufacturer, 'Dreamy Kitties')
+      .setCharacteristic(this.platform.Characteristic.Manufacturer, 'Bella Cica')
       .setCharacteristic(this.platform.Characteristic.Model, accessory.context.device.uniqueId)
       .setCharacteristic(this.platform.Characteristic.SerialNumber, 'Default-Serial');
 
