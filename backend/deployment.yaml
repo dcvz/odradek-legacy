@@ -28,7 +28,7 @@ spec:
     spec:
       containers:
       - name: odradek
-        image: dcvz/odradek:v2
+        image: dcvz/odradek:v3
         ports:
         - containerPort: 3000
         env:

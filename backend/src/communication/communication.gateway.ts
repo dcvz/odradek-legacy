@@ -19,6 +19,7 @@ export class CommunicationGateway {
 
   @SubscribeMessage('transmit-event')
   handleTransmitEvent(@MessageBody() contactItemId: string, @ConnectedSocket() client: TaggedSocket) {
+    console.log(`client: ${client.id} is transmitting event: ${contactItemId} to session: ${client.sessionId}`)
     client.broadcast.to(client.sessionId).emit('contact-event', contactItemId)
   }
 }
